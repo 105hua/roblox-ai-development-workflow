@@ -38,6 +38,7 @@ Notes:
 - `uvx` is cross-platform, so unlike the `Roblox_Studio` entry this one needs no per-OS variant.
 - `DISABLE_TELEMETRY=true` is set deliberately. See [Telemetry](#telemetry).
 - omp inherits `PATH` from the shell that launched it. If omp is started from a GUI launcher and logs `spawn uvx ENOENT`, see [Troubleshooting](#troubleshooting).
+- **Claude Code** reads the same entry from [`.mcp.json`](../.mcp.json). Keep the two files in sync, approve `blender` when `claude` first prompts, and check it with `/mcp`. `.claude/settings.json` denies `record_trajectory_feedback`. Run only one MCP client against the addon at a time (see [Troubleshooting](#troubleshooting)), so don't run omp and Claude Code against the same Blender at once.
 
 ## Setup steps
 

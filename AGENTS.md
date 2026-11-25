@@ -14,7 +14,7 @@ Order of authority: the user's instructions, then conventions already present in
 | `blender` | 3D models, rigs, animation, materials, FBX export, asset-library imports | Blender open with the MCP for Blender addon connected | `get_addon_status` |
 | `photocraft` | 2D art: textures, UI art, icons, thumbnails | Nothing (headless) | `session_list` |
 
-- In omp, MCP tools are mounted as `xd://mcp__<server>_<tool>`. Read the device for the exact schema before first use.
+- In omp, MCP tools are mounted as `xd://mcp__<server>_<tool>`. Read the device for the exact schema before first use. In Claude Code they are named `mcp__<server>__<tool>` (see [CLAUDE.md](CLAUDE.md)).
 - Check availability before planning around a server. If one is down, say so, point to its troubleshooting section in `docs/`, and do not substitute guesses. Never report a visual or runtime check as passed unless you ran it.
 - Other MCP servers in the user's global config (UI-component catalogs, reverse-engineering tools) are not part of this workflow. Don't use them for the game unless asked.
 - Setup, tool lists and troubleshooting: [Roblox Studio](docs/roblox-studio-mcp.md), [Blender](docs/blender-mcp.md), [PhotoCraft](docs/photocraft-mcp.md).
@@ -26,7 +26,7 @@ Order of authority: the user's instructions, then conventions already present in
 3. **Protect the user's work.** Ask before deleting instances or objects, overwriting scripts or files, mass renames or reparenting, or anything that costs money or credits. Experiment on copies: duplicate instances, Blender objects or collections, PhotoCraft documents.
 4. **Be explicit about gaps.** Say what you did not verify and why. Mark inferences as inferences.
 5. **Check costs and licences before using an asset.** Generation tools may cost money or credits. Library assets carry licences (see [Blender](#blender)). Record sources in the asset manifest.
-6. **Keep secrets and telemetry out of the repo.** Never put API keys in `.omp/mcp.json` or committed files. Blender MCP telemetry is disabled by config. Do not re-enable it, do not call `record_trajectory_feedback`, and omit the optional `user_prompt` parameter on Blender tools.
+6. **Keep secrets and telemetry out of the repo.** Never put API keys in `.omp/mcp.json`, `.mcp.json`, `.claude/settings.json` or other committed files. Blender MCP telemetry is disabled by config. Do not re-enable it, do not call `record_trajectory_feedback`, and omit the optional `user_prompt` parameter on Blender tools.
 7. **Don't commit or push unless asked.**
 
 ## Roblox Studio
@@ -181,5 +181,5 @@ assets/MANIFEST.md      one row per asset: source file, export file, Roblox asse
 
 - Update `assets/MANIFEST.md` whenever you add or replace an asset. It carries the CC-BY credits you need for the game's credits.
 - Ask before committing large binaries.
-- `.omp/mcp.json` is Windows-specific for `Roblox_Studio` and `photocraft`. Don't commit machine-specific paths, tokens or keys. When MCP setup changes, update the matching file in `docs/` and the README.
+- `.omp/mcp.json` (omp) and `.mcp.json` (Claude Code) define the same servers and are Windows-specific for `Roblox_Studio` and `photocraft`. Don't commit machine-specific paths, tokens or keys. When MCP setup changes, update both files, the matching file in `docs/` and the README.
 - When a server won't connect, use the troubleshooting section of its doc in `docs/`. Don't work around a missing server by editing its config without telling the user.

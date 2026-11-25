@@ -52,6 +52,18 @@ Put the entry in your user-level `~/.omp/agent/mcp.json` instead, with the platf
 
 This form is from the upstream docs and has not been tested in this repo.
 
+### Claude Code
+
+[`.mcp.json`](../.mcp.json) holds the same entry for Claude Code. The difference is that both roots are `${CLAUDE_PROJECT_DIR:-.}`, so they resolve to the project root even when `claude` starts in a subfolder. Keep it in sync with `.omp/mcp.json`, approve `photocraft` when prompted, and check it with `/mcp`.
+
+For a different install path or another OS, override the entry for your checkout only:
+
+```bash
+claude mcp add --scope local photocraft -- photocraft-cli mcp --automation-read-root /abs/path/to/repo --automation-write-root /abs/path/to/repo
+```
+
+This override is untested.
+
 ## Setup steps
 
 1. Install PhotoCraft from the [releases page](https://github.com/storytold/photocraft/releases) (or `getartcraft.com/apps/photocraft`). The installer includes `photocraft-cli`.

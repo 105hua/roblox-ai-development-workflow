@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "mcp__Roblox_Studio__list_roblox_studios",
+      "mcp__Roblox_Studio__get_studio_state",
+      "mcp__Roblox_Studio__search_game_tree",
+      "mcp__Roblox_Studio__inspect_instance",
+      "mcp__Roblox_Studio__script_read",
+      "mcp__Roblox_Studio__script_search",
+      "mcp__Roblox_Studio__script_grep",
+      "mcp__Roblox_Studio__get_console_output",
+      "mcp__Roblox_Studio__screen_capture",
+      "mcp__Roblox_Studio__wait_job_finished",
+      "mcp__Roblox_Studio__http_get",
+      "mcp__Roblox_Studio__skill",
+      "mcp__blender__get_addon_status",
+      "mcp__blender__get_scene_info",
+      "mcp__blender__look",
+      "mcp__blender__search_assets",
+      "mcp__photocraft__session_list",
+      "mcp__photocraft__doc_inspect",
+      "mcp__photocraft__render_preview",
+      "mcp__photocraft__doc_render_preview",
+      "mcp__photocraft__command_list",
+      "mcp__photocraft__jobs_list"
+    ],
+    "ask": [
+      "mcp__blender__generate_3d",
+      "mcp__Roblox_Studio__generate_mesh",
+      "mcp__Roblox_Studio__generate_material",
+      "mcp__Roblox_Studio__generate_procedural_model",
+      "Edit(./.mcp.json)",
+      "Edit(./.omp/mcp.json)",
+      "Edit(./.claude/settings.json)"
+    ],
+    "deny": [
+      "mcp__blender__record_trajectory_feedback"
+    ]
+  }
+}
