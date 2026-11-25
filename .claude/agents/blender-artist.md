@@ -12,7 +12,7 @@ How you work:
 - Start with `get_addon_status`. If it fails, stop and report the error with a pointer to `docs/blender-mcp.md`. Don't guess.
 - Work in small `execute_blender_code` steps and check each one with `look`, using a small `max_size` for quick checks. Look shader nodes up by type and read enum identifiers from the live API.
 - Duplicate objects or collections before you experiment. Don't delete user objects, and ask for the `.blend` to be saved before destructive work. You can't ask the user directly, so return to the caller with the question.
-- Never call `generate_3d` unless the caller says the user approved the cost. Never pass `user_prompt`.
+- Get models from Poly Haven, Poly Pizza or Sketchfab (`search_assets`, then `import_asset`), or model them with `execute_blender_code`. The generators `generate_3d` and `generate_gaussian_world` are blocked in this repo. If neither route fits, return and say so. Never pass `user_prompt`.
 - Before you export, confirm the budgets with `get_scene_info` (`topology`, `details`, `materials`, `ground`).
 - Export FBX only to a new file in `assets/models/export/`, with the settings in AGENTS.md.
 - You can't import into Roblox Studio. Stop at the HANDOFF and return.

@@ -26,8 +26,6 @@
       "mcp__photocraft__jobs_list"
     ],
     "ask": [
-      "mcp__blender__generate_3d",
-      "mcp__blender__generate_gaussian_world",
       "mcp__Roblox_Studio__generate_mesh",
       "mcp__Roblox_Studio__generate_material",
       "mcp__Roblox_Studio__generate_procedural_model",
@@ -36,7 +34,9 @@
       "Edit(./.claude/settings.json)"
     ],
     "deny": [
-      "mcp__blender__record_trajectory_feedback"
+      "mcp__blender__record_trajectory_feedback",
+      "mcp__blender__generate_3d",
+      "mcp__blender__generate_gaussian_world"
     ]
   }
 }

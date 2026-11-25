@@ -13,7 +13,8 @@ Tooling and configuration for developing Roblox experiences with an AI coding ag
 | [`AGENTS.md`](AGENTS.md) | Instructions for AI agents: how to use all three servers together, Roblox asset budgets, cross-tool pipelines, and repo conventions |
 | [`CLAUDE.md`](CLAUDE.md) | Claude Code entry point. Imports `AGENTS.md` and adds Claude Code specifics |
 | [`.mcp.json`](.mcp.json) | Claude Code project config for the same three MCP servers. Keep it in sync with `.omp/mcp.json` |
-| [`.claude/settings.json`](.claude/settings.json) | Shared Claude Code permissions: read-only MCP tools allowed, paid generation and config edits ask, trajectory feedback denied |
+| [`.claude/settings.json`](.claude/settings.json) | Shared Claude Code permissions: read-only MCP tools allowed, Studio generation and config edits ask, trajectory feedback and the paid Blender generators denied |
+| [`.omp/config.yml`](.omp/config.yml) | omp project settings that deny the paid Blender generators |
 | [`.claude/skills/`](.claude/skills/) | Step-by-step procedures (also loaded by omp): `mcp-status`, `studio-script-edit`, `studio-playtest`, `studio-insert-asset`, `blender-prop`, `photocraft-image` |
 | [`.claude/agents/`](.claude/agents/) | Claude Code subagents: `blender-artist`, `photocraft-artist`, `luau-reviewer` |
 

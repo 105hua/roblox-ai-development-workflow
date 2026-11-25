@@ -131,7 +131,7 @@ Check budgets with `get_scene_info` using the `topology` (quads, tris, n-gons, n
 - Prefer low-poly sources for Roblox. Sketchfab face counts vary widely.
 - Poly Haven textures need `apply_to` or the material is created but unused and lost on save.
 
-**Generation.** `generate_3d` makes one textured object per call, takes 1 to 3 minutes, and can cost the user money or credits. Ask first and don't repeat a request to retry it (resuming with `job` is free). Expect to clean up topology, scale and UVs to meet the budgets.
+**Generation is blocked.** The Blender server's `generate_3d` and `generate_gaussian_world` tools cost money or credits, so this repo denies them (`.claude/settings.json` for Claude Code, `.omp/config.yml` for omp). Don't call them. Get models from the libraries above (Poly Haven, Poly Pizza, Sketchfab), or model them in Blender with `execute_blender_code`. If neither fits, tell the user.
 
 ## PhotoCraft
 

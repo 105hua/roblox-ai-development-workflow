@@ -12,7 +12,7 @@ The prop pipeline from AGENTS.md ("Pipelines" and "Blender"), as a checklist. In
 1. **Agree on the spec** with the user: size in studs and metres, style, triangle budget (at most 20,000 per mesh) and texture size. Grey-box it in Studio first if the gameplay isn't proven yet.
 2. **Build in Blender.** Start with `get_addon_status` and `get_scene_info`, then make small `execute_blender_code` steps, each followed by `look`.
    - Library import: `search_assets` with `previews` first, then `import_asset` with `target_size` in metres. Check the licence: Poly Haven is CC0, Poly Pizza CC-BY needs credit (copy `polypizza_attribution`), and Sketchfab varies.
-   - `generate_3d` can cost money. Ask first and don't re-request to retry. Resuming with `job` is free.
+   - Source models from the libraries (Poly Haven, Poly Pizza, Sketchfab) or model them with `execute_blender_code`. The Blender generators `generate_3d` and `generate_gaussian_world` are blocked in this repo.
    - Experiment on a duplicate object or collection. Ask the user to save the `.blend` before destructive steps.
 3. **Check the budgets** with `get_scene_info` (fields `topology`, `details`, `materials`, `ground`) and `look` (`angles`, then `wireframe`):
    - tris ≤ 20,000, no n-gons, no non-manifold edges

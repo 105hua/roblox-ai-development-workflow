@@ -84,13 +84,15 @@ When the entry was added, omp loaded the server and exposed 9 tools matching the
 | `execute_blender_code` | Run Python (`bpy`) in the live Blender session |
 | `look` | See the result from `viewport`, `camera`, `angles` (multi-view sheet) or `frames` (animation strip), drawn `solid`, `material`, `rendered`, `wireframe` or `xray`; or show a render/image file |
 | `get_scene_info` | Compact per-object scene summary; drill in with `root` or `query` |
-| `generate_3d` | Generate and import a model with Tripo, Hunyuan3D, Hyper3D Rodin or Meshy |
-| `generate_gaussian_world` | Generate a whole environment with World Labs Marble as Gaussian splats (not editable meshes). Needs Blender 5.3+. Each call costs money or a monthly generation, so `.claude/settings.json` makes Claude Code ask first |
+| `generate_3d` | **Blocked in this repo.** Generates and imports a model with Tripo, Hunyuan3D, Hyper3D Rodin or Meshy |
+| `generate_gaussian_world` | **Blocked in this repo.** Generates a whole environment with World Labs Marble as Gaussian splats (not editable meshes). Needs Blender 5.3+ |
 | `search_assets` | Search Poly Haven, Sketchfab and Poly Pizza |
 | `import_asset` | Import an asset found with `search_assets` |
 | `get_addon_status` | Blender version, addon version, enabled libraries and generators |
 | `disable_telemetry` | Telemetry control |
 | `record_trajectory_feedback` | Telemetry control (feedback on recorded trajectories) |
+
+Both generators cost money or credits per call, so this repo denies them: `.claude/settings.json` blocks `mcp__blender__generate_3d` and `mcp__blender__generate_gaussian_world` in Claude Code, and [`.omp/config.yml`](../.omp/config.yml) sets `tools.approval` to `deny` for `mcp__blender_generate_3d` and `mcp__blender_generate_gaussian_world` in omp. Use the asset libraries or model in Blender instead. You can also untick the generators in the addon panel.
 
 Asset sources and generators are toggled in the addon's sidebar panel. Poly Haven needs no key. Poly Pizza, Sketchfab, Hyper3D, Hunyuan3D and Meshy need API keys. Store them under **Edit** ⟩ **Preferences** ⟩ **Add-ons** ⟩ **MCP for Blender**, or inject them through `BLENDERMCP_SKETCHFAB_API_KEY`, `BLENDERMCP_POLYPIZZA_API_KEY`, `BLENDERMCP_HYPER3D_API_KEY`, `BLENDERMCP_HUNYUAN3D_SECRET_ID`, `BLENDERMCP_HUNYUAN3D_SECRET_KEY`, `BLENDERMCP_HUNYUAN3D_API_URL` and `BLENDERMCP_MESHY_API_KEY`. Never commit keys to `.omp/mcp.json`.
 
