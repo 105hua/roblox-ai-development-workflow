@@ -38,6 +38,7 @@ Notes:
 - `uvx` is cross-platform, so unlike the `Roblox_Studio` entry this one needs no per-OS variant.
 - `DISABLE_TELEMETRY=true` is set deliberately. See [Telemetry](#telemetry).
 - omp inherits `PATH` from the shell that launched it. If omp is started from a GUI launcher and logs `spawn uvx ENOENT`, see [Troubleshooting](#troubleshooting).
+- **Claude Code** reads the same entry from [`.mcp.json`](../.mcp.json). Keep the two files in sync, approve `blender` when `claude` first prompts, and check it with `/mcp`. `.claude/settings.json` denies `record_trajectory_feedback`. Run only one MCP client against the addon at a time (see [Troubleshooting](#troubleshooting)), so don't run omp and Claude Code against the same Blender at once.
 
 ## Setup steps
 
@@ -74,7 +75,7 @@ Notes:
 - `/mcp list` in omp shows `blender` as connected. The server connects even when Blender is closed. It logs a warning that it could not reach Blender and keeps running, so a connected server does not prove the addon is up.
 - Ask the agent to call `get_addon_status`. It returns the Blender version, addon version, and which asset libraries and generators are enabled. This confirms the whole chain.
 
-When the entry was added, omp loaded the server and exposed 9 tools matching the table below. The addon was also loaded headlessly on Blender 5.0.0 and 5.2.3 LTS, where it registers without errors, with auto-start on and port `9876`. The addon refuses to start its server under `blender --background`, so no tool call against a live Blender session was exercised.
+When the entry was added, omp loaded the server and exposed 9 tools matching the table below. `generate_gaussian_world` arrived in a later server release. The addon was also loaded headlessly on Blender 5.0.0 and 5.2.3 LTS, where it registers without errors, with auto-start on and port `9876`. The addon refuses to start its server under `blender --background`, so no tool call against a live Blender session was exercised.
 
 ## Available tools
 
@@ -83,12 +84,15 @@ When the entry was added, omp loaded the server and exposed 9 tools matching the
 | `execute_blender_code` | Run Python (`bpy`) in the live Blender session |
 | `look` | See the result from `viewport`, `camera`, `angles` (multi-view sheet) or `frames` (animation strip), drawn `solid`, `material`, `rendered`, `wireframe` or `xray`; or show a render/image file |
 | `get_scene_info` | Compact per-object scene summary; drill in with `root` or `query` |
-| `generate_3d` | Generate and import a model with Tripo, Hunyuan3D, Hyper3D Rodin or Meshy |
+| `generate_3d` | **Blocked in this repo.** Generates and imports a model with Tripo, Hunyuan3D, Hyper3D Rodin or Meshy |
+| `generate_gaussian_world` | **Blocked in this repo.** Generates a whole environment with World Labs Marble as Gaussian splats (not editable meshes). Needs Blender 5.3+ |
 | `search_assets` | Search Poly Haven, Sketchfab and Poly Pizza |
 | `import_asset` | Import an asset found with `search_assets` |
 | `get_addon_status` | Blender version, addon version, enabled libraries and generators |
 | `disable_telemetry` | Telemetry control |
 | `record_trajectory_feedback` | Telemetry control (feedback on recorded trajectories) |
+
+Both generators cost money or credits per call, so this repo denies them: `.claude/settings.json` blocks `mcp__blender__generate_3d` and `mcp__blender__generate_gaussian_world` in Claude Code, and [`.omp/config.yml`](../.omp/config.yml) sets `tools.approval` to `deny` for `mcp__blender_generate_3d` and `mcp__blender_generate_gaussian_world` in omp. Use the asset libraries or model in Blender instead. You can also untick the generators in the addon panel.
 
 Asset sources and generators are toggled in the addon's sidebar panel. Poly Haven needs no key. Poly Pizza, Sketchfab, Hyper3D, Hunyuan3D and Meshy need API keys. Store them under **Edit** ⟩ **Preferences** ⟩ **Add-ons** ⟩ **MCP for Blender**, or inject them through `BLENDERMCP_SKETCHFAB_API_KEY`, `BLENDERMCP_POLYPIZZA_API_KEY`, `BLENDERMCP_HYPER3D_API_KEY`, `BLENDERMCP_HUNYUAN3D_SECRET_ID`, `BLENDERMCP_HUNYUAN3D_SECRET_KEY`, `BLENDERMCP_HUNYUAN3D_API_URL` and `BLENDERMCP_MESHY_API_KEY`. Never commit keys to `.omp/mcp.json`.
 
@@ -165,7 +169,7 @@ Updates the server and every installed copy of the addon, keeping `.bak` files. 
 - The addon's socket has no authentication or encryption. Anyone who can reach the port can run Python in Blender. Keep it on `localhost`, and tunnel over SSH instead of pointing `BLENDER_HOST` at a remote machine.
 - `uvx` downloads and runs `mcp-for-blender` from PyPI at launch. omp treats committed MCP definitions as trusted input and `stdio` entries run arbitrary commands, so review `.omp/mcp.json` before opening an unfamiliar checkout.
 - Asset sources (Poly Haven, Sketchfab, Poly Pizza) and AI generators make outbound network requests. Untick the ones you don't want in the addon panel.
-- Poly Pizza models are mostly CC-BY and require attribution. The addon writes the credit line to the imported object's `polypizza_attribution` custom property. Poly Haven assets are CC0.
+- Poly Pizza models are mostly CC-BY and require attribution. The addon writes the credit line to the imported object's `polypizza_attribution` custom property. Poly Haven assets are CC0. In this repo, agents must stop and get your approval before importing any asset that needs attribution, such as CC-BY Poly Pizza or a credited Sketchfab model. They report its name, source, licence and exact credit line first (AGENTS.md rule 6). CC0 assets need no approval.
 
 ## Official Blender Lab server
 

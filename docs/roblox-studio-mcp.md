@@ -51,6 +51,18 @@ Roblox documents a different launch command on macOS. Because `.omp/mcp.json` is
 
 This entry comes from the Roblox docs and has not been tested in this repo.
 
+### Claude Code
+
+[`.mcp.json`](../.mcp.json) holds the same Windows entry for Claude Code. Keep it in sync with `.omp/mcp.json`. The first time you start `claude` in the repo, approve `Roblox_Studio` when prompted, then check it with `/mcp`. Because this repo already configures the server, you don't need Studio's **Quick connect** for Claude Code.
+
+On macOS, override the committed entry for your checkout only. A local-scope server takes precedence over a project server with the same name:
+
+```bash
+claude mcp add --scope local Roblox_Studio -- /Applications/RobloxStudio.app/Contents/MacOS/StudioMCP
+```
+
+This override is untested, like the omp macOS entry.
+
 ## Setup steps
 
 1. Install the latest Roblox Studio.

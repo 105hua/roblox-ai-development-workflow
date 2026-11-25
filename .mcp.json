@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "Roblox_Studio": {
+      "type": "stdio",
+      "command": "cmd.exe",
+      "args": ["/c", "%LOCALAPPDATA%\\Roblox\\mcp.bat"]
+    },
+    "blender": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-for-blender"],
+      "env": {
+        "DISABLE_TELEMETRY": "true"
+      }
+    },
+    "photocraft": {
+      "type": "stdio",
+      "command": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
+      "args": [
+        "mcp",
+        "--headless",
+        "--automation-read-root",
+        "${CLAUDE_PROJECT_DIR:-.}",
+        "--automation-write-root",
+        "${CLAUDE_PROJECT_DIR:-.}"
+      ]
+    }
+  }
+}

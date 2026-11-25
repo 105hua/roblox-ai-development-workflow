@@ -10,7 +10,7 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
 
 | Backend | Started with | What it drives |
 | --- | --- | --- |
-| Headless (configured here) | `photocraft-cli mcp --automation-read-root <dir> --automation-write-root <dir>` | An in-process engine session. No desktop app needed |
+| Headless (configured here) | `photocraft-cli mcp --headless --automation-read-root <dir> --automation-write-root <dir>` | An in-process engine session. No desktop app needed |
 | Bridge (optional) | `photocraft-cli mcp --bridge 127.0.0.1:<port> --control-token-file <file>` | A running desktop app started with `photocraft --control <port>`. Adds UI tools |
 
 ## Configuration
@@ -23,6 +23,7 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
   "command": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
   "args": [
     "mcp",
+    "--headless",
     "--automation-read-root",
     ".",
     "--automation-write-root",
@@ -33,6 +34,7 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
 
 Notes:
 
+- **`--headless` keeps it headless.** Upstream says plain `photocraft-cli mcp` works in the open PhotoCraft window when you let agents use it under **Preferences** ⟩ **AI Integrations**. When the app is closed, plain `mcp` can start the app, serve a headless session or report an error, depending on that preference. `--headless` always serves the in-process session, whatever the preference says, so the agent never edits a document you have open. In upstream's examples the flag comes right after `mcp`. Use [Bridge mode](#bridge-mode-optional-not-configured) when you do want the agent in your open window.
 - **Windows-specific path.** `C:\Program Files\PhotoCraft\photocraft-cli.exe` is the MSI's default install location. The CLI is not put on `PATH`, so the entry uses the absolute path. If you installed elsewhere, edit `command`. Linux `.deb`/`.rpm` packages install `/usr/bin/photocraft-cli`. On macOS the CLI is a separate release asset (`photocraft-cli-<version>-macos-<arch>.zip`), because the `.app` holds only the desktop app.
 - **Roots are the filesystem permission.** The server can read only under `--automation-read-root` and write only under `--automation-write-root`. A root that is omitted means no access in that direction. Paths in tool calls are relative to the root, or absolute paths beneath it.
 - **`.` means the repo root.** Relative roots resolve against omp's working directory, which for a project-scoped server is the directory omp was started in. Start omp from the repo root. The root directory must exist or the server exits with `cannot open automation read root`.
@@ -46,11 +48,23 @@ Put the entry in your user-level `~/.omp/agent/mcp.json` instead, with the platf
 "photocraft": {
   "type": "stdio",
   "command": "photocraft-cli",
-  "args": ["mcp", "--automation-read-root", "/abs/path/to/repo", "--automation-write-root", "/abs/path/to/repo"]
+  "args": ["mcp", "--headless", "--automation-read-root", "/abs/path/to/repo", "--automation-write-root", "/abs/path/to/repo"]
 }
 ```
 
 This form is from the upstream docs and has not been tested in this repo.
+
+### Claude Code
+
+[`.mcp.json`](../.mcp.json) holds the same entry for Claude Code. The difference is that both roots are `${CLAUDE_PROJECT_DIR:-.}`, so they resolve to the project root even when `claude` starts in a subfolder. Keep it in sync with `.omp/mcp.json`, approve `photocraft` when prompted, and check it with `/mcp`.
+
+For a different install path or another OS, override the entry for your checkout only:
+
+```bash
+claude mcp add --scope local photocraft -- photocraft-cli mcp --headless --automation-read-root /abs/path/to/repo --automation-write-root /abs/path/to/repo
+```
+
+This override is untested.
 
 ## Setup steps
 
@@ -63,7 +77,7 @@ This form is from the upstream docs and has not been tested in this repo.
 - `/mcp list` in omp shows `photocraft` as connected.
 - Ask the agent to create a document and save it, for example `doc_new` then `doc_save` to `check.png`. A saved file appearing in the repo root confirms both the engine and the write root. Delete it afterwards.
 
-When the entry was added, omp loaded the server with PhotoCraft 0.13.0, and `doc_new` (64x64) followed by `doc_save` to a relative path wrote the PNG into the repo root. The probe file was then removed. Bridge mode and UI tools were not exercised.
+When the entry was added, omp loaded the server with PhotoCraft 0.13.0, and `doc_new` (64x64) followed by `doc_save` to a relative path wrote the PNG into the repo root. The probe file was then removed. Bridge mode and UI tools were not exercised. `--headless` was added to the committed entries later, following upstream's docs, and hasn't been re-tested against a live install.
 
 ## Available tools
 

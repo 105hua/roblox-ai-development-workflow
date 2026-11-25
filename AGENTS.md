@@ -14,7 +14,7 @@ Order of authority: the user's instructions, then conventions already present in
 | `blender` | 3D models, rigs, animation, materials, FBX export, asset-library imports | Blender open with the MCP for Blender addon connected | `get_addon_status` |
 | `photocraft` | 2D art: textures, UI art, icons, thumbnails | Nothing (headless) | `session_list` |
 
-- In omp, MCP tools are mounted as `xd://mcp__<server>_<tool>`. Read the device for the exact schema before first use.
+- In omp, MCP tools are mounted as `xd://mcp__<server>_<tool>`. Read the device for the exact schema before first use. In Claude Code they are named `mcp__<server>__<tool>` (see [CLAUDE.md](CLAUDE.md)).
 - Check availability before planning around a server. If one is down, say so, point to its troubleshooting section in `docs/`, and do not substitute guesses. Never report a visual or runtime check as passed unless you ran it.
 - Other MCP servers in the user's global config (UI-component catalogs, reverse-engineering tools) are not part of this workflow. Don't use them for the game unless asked.
 - Setup, tool lists and troubleshooting: [Roblox Studio](docs/roblox-studio-mcp.md), [Blender](docs/blender-mcp.md), [PhotoCraft](docs/photocraft-mcp.md).
@@ -26,8 +26,15 @@ Order of authority: the user's instructions, then conventions already present in
 3. **Protect the user's work.** Ask before deleting instances or objects, overwriting scripts or files, mass renames or reparenting, or anything that costs money or credits. Experiment on copies: duplicate instances, Blender objects or collections, PhotoCraft documents.
 4. **Be explicit about gaps.** Say what you did not verify and why. Mark inferences as inferences.
 5. **Check costs and licences before using an asset.** Generation tools may cost money or credits. Library assets carry licences (see [Blender](#blender)). Record sources in the asset manifest.
-6. **Keep secrets and telemetry out of the repo.** Never put API keys in `.omp/mcp.json` or committed files. Blender MCP telemetry is disabled by config. Do not re-enable it, do not call `record_trajectory_feedback`, and omit the optional `user_prompt` parameter on Blender tools.
-7. **Don't commit or push unless asked.**
+6. **Stop before using any asset that needs attribution.** This covers any asset whose licence or creator requires a credit line: a CC-BY Poly Pizza model, a Sketchfab model that requires credit, a Creator Store asset whose creator asks for credit, a credited texture or image, and so on. Before importing, inserting or opening such an asset, tell the user:
+   - the asset's name
+   - its source, with a link or ID
+   - its licence
+   - the exact credit line required
+
+   Then wait for a go-ahead. Read the licence from the search result or the asset's page before importing. If you can't determine the licence, treat the asset as needing attribution. CC0 assets (all of Poly Haven, and CC0 Poly Pizza models), the user's own assets and art you make yourself need no approval. Once the user approves, record the credit line in `assets/MANIFEST.md`.
+7. **Keep secrets and telemetry out of the repo.** Never put API keys in `.omp/mcp.json`, `.mcp.json`, `.claude/settings.json` or other committed files. Blender MCP telemetry is disabled by config. Do not re-enable it, do not call `record_trajectory_feedback`, and omit the optional `user_prompt` parameter on Blender tools.
+8. **Don't commit or push unless asked.**
 
 ## Roblox Studio
 
@@ -63,7 +70,7 @@ Roblox's API changes. Use `http_get` (Engine API, Creator docs, Cloud API, perfo
 ### Generating and inserting assets
 - `generate_procedural_model` (primitive-part models, with `wait_job_finished`), `generate_mesh`, `generate_material`, `search_asset`, `insert_asset`, `upload_image`, `store_image`. Check each result with `screen_capture`.
 - Grey-box first: block out levels with parts or procedural models, prove the gameplay, and swap in final art afterwards.
-- `search_asset` covers the Creator Store and the user's Creator Inventory. Prefer the user's own assets. Creator Store models can contain scripts, so after `insert_asset` search the inserted tree for `Script`, `LocalScript` and `ModuleScript` and review or remove them. Never run `require` or `loadstring` on code you haven't read.
+- `search_asset` covers the Creator Store and the user's Creator Inventory. Prefer the user's own assets. Before you `insert_asset` a Creator Store asset, check its description for a credit requirement. If the asset requires credit, stop and ask first (rule 6). Creator Store models can contain scripts, so after `insert_asset` search the inserted tree for `Script`, `LocalScript` and `ModuleScript` and review or remove them. Never run `require` or `loadstring` on code you haven't read.
 - `upload_image` takes HTTP URLs only. `store_image` turns a local file into an image URI for use as a reference input to other tools. No documented tool imports a local mesh or image file into Roblox. The user does that in Studio (Asset Manager or the 3D Importer) and gives you the asset ID. See [Pipelines](#pipelines).
 
 ## Luau and game engineering
@@ -127,11 +134,11 @@ Check budgets with `get_scene_info` using the `topology` (quads, tris, n-gons, n
 
 **Library assets**
 - `search_assets` (use `previews` before importing), then `import_asset`. Always pass `target_size` in metres for models. Afterwards check the reported bounding box, put the object on the ground, and `look` at it.
-- Poly Haven is CC0. Poly Pizza is CC0 or CC-BY, and CC-BY needs credit: the addon writes the credit line to the object's `polypizza_attribution` custom property, so copy it into the manifest. Sketchfab licences vary per model, so confirm the licence allows use in a published game before importing.
+- Poly Haven is CC0 and can be imported without asking. Poly Pizza is CC0 or CC-BY. A CC-BY model needs credit, so stop before `import_asset` and get approval (rule 6). After an approved import, the addon writes the credit line to the object's `polypizza_attribution` custom property, so copy it into the manifest. Sketchfab licences vary per model. Skip any model whose licence doesn't allow use in a published game. If the licence requires credit, stop and get approval (rule 6) before importing.
 - Prefer low-poly sources for Roblox. Sketchfab face counts vary widely.
 - Poly Haven textures need `apply_to` or the material is created but unused and lost on save.
 
-**Generation.** `generate_3d` makes one textured object per call, takes 1 to 3 minutes, and can cost the user money or credits. Ask first and don't repeat a request to retry it (resuming with `job` is free). Expect to clean up topology, scale and UVs to meet the budgets.
+**Generation is blocked.** The Blender server's `generate_3d` and `generate_gaussian_world` tools cost money or credits, so this repo denies them (`.claude/settings.json` for Claude Code, `.omp/config.yml` for omp). Don't call them. Get models from the libraries above (Poly Haven, Poly Pizza, Sketchfab), or model them in Blender with `execute_blender_code`. If neither fits, tell the user.
 
 ## PhotoCraft
 
@@ -145,6 +152,7 @@ Check budgets with `get_scene_info` using the `topology` (quads, tris, n-gons, n
 **Making Roblox-ready art**
 - Keep layered sources as `.pcraft` (lossless) or `.psd`. Export flattened copies with `doc_save` and a `path` ending in `.png` (Roblox accepts `.png`, `.jpg`, `.tga`, `.bmp` for uploaded textures). Prefer PNG for lossless color and alpha.
 - Use the Roblox size budgets above. Make roughness, metalness and emissive-mask maps `mode: gray`, `depth: 8`, then reopen the exported file to confirm its mode. PhotoCraft is not a normal-map baker, so bake normals in Blender and keep them OpenGL tangent-space.
+- Source images such as textures, references and photos follow rule 6. Use CC0 or your own art freely, and stop and ask before opening anything that needs credit.
 - For tiling textures, check seams before exporting. Look in `command_list` for an offset or tile command and view the result with `render_preview`.
 - UI art: use transparent backgrounds, power-of-two canvases and consistent padding. Design panels and buttons so they can use 9-slice scaling (`ImageLabel.ScaleType = Slice` with `SliceCenter`). Check current game icon and thumbnail sizes through `http_get`.
 
@@ -179,7 +187,7 @@ assets/art/export/      PNG exports for upload
 assets/MANIFEST.md      one row per asset: source file, export file, Roblox asset ID, licence and attribution
 ```
 
-- Update `assets/MANIFEST.md` whenever you add or replace an asset. It carries the CC-BY credits you need for the game's credits.
+- Update `assets/MANIFEST.md` whenever you add or replace an asset. It carries the credit lines, approved under rule 6, that you need for the game's credits.
 - Ask before committing large binaries.
-- `.omp/mcp.json` is Windows-specific for `Roblox_Studio` and `photocraft`. Don't commit machine-specific paths, tokens or keys. When MCP setup changes, update the matching file in `docs/` and the README.
+- `.omp/mcp.json` (omp) and `.mcp.json` (Claude Code) define the same servers and are Windows-specific for `Roblox_Studio` and `photocraft`. Don't commit machine-specific paths, tokens or keys. When MCP setup changes, update both files, the matching file in `docs/` and the README.
 - When a server won't connect, use the troubleshooting section of its doc in `docs/`. Don't work around a missing server by editing its config without telling the user.

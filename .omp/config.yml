@@ -1,0 +1,7 @@
+# omp project settings for this repo.
+# Block the paid Blender generators (see AGENTS.md, "Blender").
+# Keys are omp's registered MCP tool names: mcp__<server>_<tool>.
+tools:
+  approval:
+    mcp__blender_generate_3d: deny
+    mcp__blender_generate_gaussian_world: deny
