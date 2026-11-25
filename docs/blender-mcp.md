@@ -169,7 +169,7 @@ Updates the server and every installed copy of the addon, keeping `.bak` files. 
 - The addon's socket has no authentication or encryption. Anyone who can reach the port can run Python in Blender. Keep it on `localhost`, and tunnel over SSH instead of pointing `BLENDER_HOST` at a remote machine.
 - `uvx` downloads and runs `mcp-for-blender` from PyPI at launch. omp treats committed MCP definitions as trusted input and `stdio` entries run arbitrary commands, so review `.omp/mcp.json` before opening an unfamiliar checkout.
 - Asset sources (Poly Haven, Sketchfab, Poly Pizza) and AI generators make outbound network requests. Untick the ones you don't want in the addon panel.
-- Poly Pizza models are mostly CC-BY and require attribution. The addon writes the credit line to the imported object's `polypizza_attribution` custom property. Poly Haven assets are CC0.
+- Poly Pizza models are mostly CC-BY and require attribution. The addon writes the credit line to the imported object's `polypizza_attribution` custom property. Poly Haven assets are CC0. In this repo, agents must stop and get your approval before importing any asset that needs attribution, such as CC-BY Poly Pizza or a credited Sketchfab model. They report its name, source, licence and exact credit line first (AGENTS.md rule 6). CC0 assets need no approval.
 
 ## Official Blender Lab server
 
