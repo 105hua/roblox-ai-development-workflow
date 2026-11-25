@@ -18,6 +18,7 @@
       "command": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
       "args": [
         "mcp",
+        "--headless",
         "--automation-read-root",
         "${CLAUDE_PROJECT_DIR:-.}",
         "--automation-write-root",

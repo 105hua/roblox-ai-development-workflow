@@ -75,7 +75,7 @@ Notes:
 - `/mcp list` in omp shows `blender` as connected. The server connects even when Blender is closed. It logs a warning that it could not reach Blender and keeps running, so a connected server does not prove the addon is up.
 - Ask the agent to call `get_addon_status`. It returns the Blender version, addon version, and which asset libraries and generators are enabled. This confirms the whole chain.
 
-When the entry was added, omp loaded the server and exposed 9 tools matching the table below. The addon was also loaded headlessly on Blender 5.0.0 and 5.2.3 LTS, where it registers without errors, with auto-start on and port `9876`. The addon refuses to start its server under `blender --background`, so no tool call against a live Blender session was exercised.
+When the entry was added, omp loaded the server and exposed 9 tools matching the table below. `generate_gaussian_world` arrived in a later server release. The addon was also loaded headlessly on Blender 5.0.0 and 5.2.3 LTS, where it registers without errors, with auto-start on and port `9876`. The addon refuses to start its server under `blender --background`, so no tool call against a live Blender session was exercised.
 
 ## Available tools
 
@@ -85,6 +85,7 @@ When the entry was added, omp loaded the server and exposed 9 tools matching the
 | `look` | See the result from `viewport`, `camera`, `angles` (multi-view sheet) or `frames` (animation strip), drawn `solid`, `material`, `rendered`, `wireframe` or `xray`; or show a render/image file |
 | `get_scene_info` | Compact per-object scene summary; drill in with `root` or `query` |
 | `generate_3d` | Generate and import a model with Tripo, Hunyuan3D, Hyper3D Rodin or Meshy |
+| `generate_gaussian_world` | Generate a whole environment with World Labs Marble as Gaussian splats (not editable meshes). Needs Blender 5.3+. Each call costs money or a monthly generation, so `.claude/settings.json` makes Claude Code ask first |
 | `search_assets` | Search Poly Haven, Sketchfab and Poly Pizza |
 | `import_asset` | Import an asset found with `search_assets` |
 | `get_addon_status` | Blender version, addon version, enabled libraries and generators |

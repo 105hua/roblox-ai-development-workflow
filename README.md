@@ -52,7 +52,11 @@ The committed `photocraft` entry is Windows-specific and grants the server read 
 2. Run `claude` from the repo root. Claude Code loads `CLAUDE.md` (which imports `AGENTS.md`), the skills and the subagents automatically.
 3. Approve `Roblox_Studio`, `blender` and `photocraft` when Claude Code asks about the project MCP servers in `.mcp.json`. Run `/mcp` to confirm they're connected, then ask Claude to run the `mcp-status` skill to check that each application is actually reachable.
 4. On macOS, or with PhotoCraft installed elsewhere, override an entry for your checkout only with `claude mcp add --scope local <name> -- <command>`. The docs in `docs/` have the exact commands.
-5. Put personal permissions in `.claude/settings.local.json`, which is gitignored.
+5. Put personal permissions in `.claude/settings.local.json`, which is gitignored. The shared settings only pre-allow read-only tools, so Blender and PhotoCraft write tools still prompt. That matters when the artist subagents run in the background. If you want them to work unattended, allow the write tools yourself, for example:
+
+   ```json
+   { "permissions": { "allow": ["mcp__blender__execute_blender_code", "mcp__photocraft__command_run", "mcp__photocraft__doc_save"] } }
+   ```
 
 The skills hold the AGENTS.md procedures, and Claude picks them up when a task matches. You can also call one directly, for example `/studio-playtest`. Delegate Blender and PhotoCraft work to the `blender-artist` and `photocraft-artist` subagents so their preview images don't fill the main context. Use `luau-reviewer` for a read-only review before calling a feature done.
 

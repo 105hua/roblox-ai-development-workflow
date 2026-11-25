@@ -27,6 +27,7 @@
     ],
     "ask": [
       "mcp__blender__generate_3d",
+      "mcp__blender__generate_gaussian_world",
       "mcp__Roblox_Studio__generate_mesh",
       "mcp__Roblox_Studio__generate_material",
       "mcp__Roblox_Studio__generate_procedural_model",
