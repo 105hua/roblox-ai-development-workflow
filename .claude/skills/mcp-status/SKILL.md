@@ -1,6 +1,6 @@
 ---
 name: mcp-status
-description: Use when starting a Roblox, Blender or PhotoCraft session in this repo, before planning work that depends on Roblox Studio, Blender or PhotoCraft, or when an MCP tool fails with errors like "MCP subprocess closed stdout", "Could not connect to Blender", "spawn uvx ENOENT" or "cannot open automation read root".
+description: Use when starting a Roblox, Blender or PhotoCraft session in this repo, before planning work that depends on Roblox Studio, Blender or PhotoCraft, or when an MCP tool fails with errors like "MCP subprocess closed stdout", "Could not connect to Blender", "spawn uvx ENOENT", "unexpected argument '--headless' found" or "cannot resolve automation read root".
 ---
 
 # MCP status check

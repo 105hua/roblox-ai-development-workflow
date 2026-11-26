@@ -42,8 +42,8 @@ The `blender` entry works on any OS and has telemetry disabled. Details are in [
 ### PhotoCraft
 
 1. Install [PhotoCraft](https://github.com/storytold/photocraft/releases). The installer includes `photocraft-cli`.
-2. Confirm it exists at `C:\Program Files\PhotoCraft\photocraft-cli.exe`, or edit `command` in `.omp/mcp.json` to your install path.
-3. Confirm `photocraft` is connected. It runs headlessly, so the desktop app doesn't need to be open.
+2. Confirm it exists at `C:\Program Files\ArtCraft\PhotoCraft\photocraft-cli.exe`, or point `command` at your install path (see [`docs/photocraft-mcp.md`](docs/photocraft-mcp.md) for per-machine overrides).
+3. Confirm `photocraft` is connected. `photocraft-cli mcp` runs its own headless engine by default, so the desktop app doesn't need to be open.
 
 The committed `photocraft` entry is Windows-specific and grants the server read and write access to the repo root, so start omp from the repo root. Other platforms, narrower roots and the optional live-app bridge are in [`docs/photocraft-mcp.md`](docs/photocraft-mcp.md).
 

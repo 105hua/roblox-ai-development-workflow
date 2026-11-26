@@ -10,8 +10,8 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
 
 | Backend | Started with | What it drives |
 | --- | --- | --- |
-| Headless (configured here) | `photocraft-cli mcp --headless --automation-read-root <dir> --automation-write-root <dir>` | An in-process engine session. No desktop app needed |
-| Bridge (optional) | `photocraft-cli mcp --bridge 127.0.0.1:<port> --control-token-file <file>` | A running desktop app started with `photocraft --control <port>`. Adds UI tools |
+| Headless (default, configured here) | `photocraft-cli mcp --automation-read-root <dir> --automation-write-root <dir>` | An in-process engine session. No desktop app needed |
+| Bridge (optional) | `photocraft-cli mcp --bridge 127.0.0.1:<port> --control-token-file <file>` | A running desktop app started with `photocraft --control <port>`. Adds UI tools. Root flags are refused here, because the desktop app owns the roots |
 
 ## Configuration
 
@@ -20,10 +20,9 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
 ```json
 "photocraft": {
   "type": "stdio",
-  "command": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
+  "command": "C:\\Program Files\\ArtCraft\\PhotoCraft\\photocraft-cli.exe",
   "args": [
     "mcp",
-    "--headless",
     "--automation-read-root",
     ".",
     "--automation-write-root",
@@ -34,10 +33,10 @@ The MCP server is a mode of the PhotoCraft CLI, `photocraft-cli mcp`, which ship
 
 Notes:
 
-- **`--headless` keeps it headless.** Upstream says plain `photocraft-cli mcp` works in the open PhotoCraft window when you let agents use it under **Preferences** ⟩ **AI Integrations**. When the app is closed, plain `mcp` can start the app, serve a headless session or report an error, depending on that preference. `--headless` always serves the in-process session, whatever the preference says, so the agent never edits a document you have open. In upstream's examples the flag comes right after `mcp`. Use [Bridge mode](#bridge-mode-optional-not-configured) when you do want the agent in your open window.
-- **Windows-specific path.** `C:\Program Files\PhotoCraft\photocraft-cli.exe` is the MSI's default install location. The CLI is not put on `PATH`, so the entry uses the absolute path. If you installed elsewhere, edit `command`. Linux `.deb`/`.rpm` packages install `/usr/bin/photocraft-cli`. On macOS the CLI is a separate release asset (`photocraft-cli-<version>-macos-<arch>.zip`), because the `.app` holds only the desktop app.
+- **Headless is the default.** In `photocraft-cli` 0.23.1, `photocraft-cli mcp` serves an in-process engine session unless you pass `--bridge` or set `PHOTOCRAFT_CONTROL_PORT`, so the agent never edits a document you have open. There is no `--headless` flag any more, and passing it fails with `unexpected argument '--headless' found`. Earlier releases needed `--headless`, and older copies of this config still carry it (see [Troubleshooting](#troubleshooting)). Use [Bridge mode](#bridge-mode-optional-not-configured) when you do want the agent in your open window. Run `photocraft-cli mcp --help` to see the options your installed version accepts.
+- **Windows-specific path.** `C:\Program Files\ArtCraft\PhotoCraft\photocraft-cli.exe` is the installer's default location, next to the desktop app `photocraft.exe`. The CLI is not put on `PATH`, so the entry uses the absolute path. If you installed elsewhere, edit `command`. Linux `.deb`/`.rpm` packages install `/usr/bin/photocraft-cli`. On macOS the CLI is a separate release asset (`photocraft-cli-<version>-macos-<arch>.zip`), because the `.app` holds only the desktop app.
 - **Roots are the filesystem permission.** The server can read only under `--automation-read-root` and write only under `--automation-write-root`. A root that is omitted means no access in that direction. Paths in tool calls are relative to the root, or absolute paths beneath it.
-- **`.` means the repo root.** Relative roots resolve against omp's working directory, which for a project-scoped server is the directory omp was started in. Start omp from the repo root. The root directory must exist or the server exits with `cannot open automation read root`.
+- **`.` means the repo root.** Relative roots resolve against omp's working directory, which for a project-scoped server is the directory omp was started in. Start omp from the repo root. The root directory must exist or the server exits with `cannot resolve automation read root` (older releases said `cannot open automation read root`).
 - **Narrowing the roots.** To limit the agent to one folder, create it and point both roots there, for example `assets/photocraft`. Upstream recommends "deliberately chosen trusted workspace directories".
 
 ### Other platforms
@@ -48,7 +47,7 @@ Put the entry in your user-level `~/.omp/agent/mcp.json` instead, with the platf
 "photocraft": {
   "type": "stdio",
   "command": "photocraft-cli",
-  "args": ["mcp", "--headless", "--automation-read-root", "/abs/path/to/repo", "--automation-write-root", "/abs/path/to/repo"]
+  "args": ["mcp", "--automation-read-root", "/abs/path/to/repo", "--automation-write-root", "/abs/path/to/repo"]
 }
 ```
 
@@ -61,7 +60,7 @@ This form is from the upstream docs and has not been tested in this repo.
 For a different install path or another OS, override the entry for your checkout only:
 
 ```bash
-claude mcp add --scope local photocraft -- photocraft-cli mcp --headless --automation-read-root /abs/path/to/repo --automation-write-root /abs/path/to/repo
+claude mcp add --scope local photocraft -- photocraft-cli mcp --automation-read-root /abs/path/to/repo --automation-write-root /abs/path/to/repo
 ```
 
 This override is untested.
@@ -69,7 +68,7 @@ This override is untested.
 ## Setup steps
 
 1. Install PhotoCraft from the [releases page](https://github.com/storytold/photocraft/releases) (or `getartcraft.com/apps/photocraft`). The installer includes `photocraft-cli`.
-2. Confirm the CLI path: `"C:\Program Files\PhotoCraft\photocraft-cli.exe" --version`.
+2. Confirm the CLI path: `& "C:\Program Files\ArtCraft\PhotoCraft\photocraft-cli.exe" --version` in PowerShell.
 3. Start (or restart) omp from this repo. omp discovers `.omp/mcp.json` automatically. Nothing needs to be running first, because the headless backend is self-contained.
 
 ## Verify the connection
@@ -77,13 +76,15 @@ This override is untested.
 - `/mcp list` in omp shows `photocraft` as connected.
 - Ask the agent to create a document and save it, for example `doc_new` then `doc_save` to `check.png`. A saved file appearing in the repo root confirms both the engine and the write root. Delete it afterwards.
 
-When the entry was added, omp loaded the server with PhotoCraft 0.13.0, and `doc_new` (64x64) followed by `doc_save` to a relative path wrote the PNG into the repo root. The probe file was then removed. Bridge mode and UI tools were not exercised. `--headless` was added to the committed entries later, following upstream's docs, and hasn't been re-tested against a live install.
+When the entry was added, omp loaded the server with PhotoCraft 0.13.0, and `doc_new` (64x64) followed by `doc_save` to a relative path wrote the PNG into the repo root. The probe file was then removed. Bridge mode and UI tools were not exercised.
+
+On 2026-11-26, with `photocraft-cli 0.23.1 (45066c482, 2026-11-12)` installed at `C:\Program Files\ArtCraft\PhotoCraft`, the `.mcp.json` command (no `--headless`, both roots set to the repo) was started over stdio. `initialize`, `tools/list` (26 tools) and a `session_list` tool call all succeeded. Bridge mode and UI tools were still not exercised.
 
 ## Available tools
 
 | Area | Tools |
 | --- | --- |
-| Session and documents | `session_list`, `doc_new`, `doc_open`, `doc_place`, `doc_select`, `doc_save`, `doc_export`, `doc_export_layers`, `doc_export_data_sets`, `doc_import_data_sets`, `doc_close` |
+| Session and documents | `session_list`, `doc_new`, `doc_open`, `doc_place`, `doc_select`, `doc_save`, `doc_export`, `doc_export_layers`, `doc_export_data_sets`, `doc_import_data_sets`, `doc_replace_smart_object`, `doc_close` |
 | Inspect and preview | `doc_inspect` (layer tree, history, selection), `render_preview` and `doc_render_preview` (bounded PNG, `max_side` default 1024, max 2048) |
 | Engine commands | `command_list` (discover ids and parameter docs), `command_run`, `command_batch` (ordered steps, stops at first error by default) |
 | Background jobs | `jobs_list`, `jobs_cancel` |
@@ -111,7 +112,7 @@ Use this to have the agent work in a document you have open and to use the UI to
 1. Start the desktop app with a private token file (the app creates it if missing) and roots:
 
    ```powershell
-   & "C:\Program Files\PhotoCraft\photocraft.exe" --control 7878 --control-token-file C:\path\outside\repo\control.token --automation-read-root . --automation-write-root .
+   & "C:\Program Files\ArtCraft\PhotoCraft\photocraft.exe" --control 7878 --control-token-file C:\path\outside\repo\control.token --automation-read-root . --automation-write-root .
    ```
 
 2. Add a second entry in your user-level config (not the committed file, since the token path is machine-specific):
@@ -119,19 +120,21 @@ Use this to have the agent work in a document you have open and to use the UI to
    ```json
    "photocraft-live": {
      "type": "stdio",
-     "command": "C:\\Program Files\\PhotoCraft\\photocraft-cli.exe",
+     "command": "C:\\Program Files\\ArtCraft\\PhotoCraft\\photocraft-cli.exe",
      "args": ["mcp", "--bridge", "127.0.0.1:7878", "--control-token-file", "C:\\path\\outside\\repo\\control.token"]
    }
    ```
 
-In bridge mode the desktop process owns the roots. Keep the token file outside the repo so it is never committed, and avoid `--control-token` on the command line because environment and process lists can expose it. This setup follows upstream's docs and was not run here.
+In bridge mode the desktop process owns the roots, and `photocraft-cli mcp` refuses `--automation-read-root` and `--automation-write-root`, so don't add them to the bridge entry. Keep the token file outside the repo so it is never committed, and avoid `--control-token` on the command line because environment and process lists can expose it. This setup follows upstream's docs and was not run here.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 | --- | --- |
-| `/mcp list` shows `photocraft` failed, or `ENOENT` | `command` doesn't point at an existing file. Check `dir "C:\Program Files\PhotoCraft"` and update the path |
-| `cannot open automation read root` | The root directory doesn't exist or `.` isn't what you expect. Start omp from the repo root, or create the folder |
+| `/mcp list` shows `photocraft` failed, or `ENOENT` | `command` doesn't point at an existing file. Check `dir "C:\Program Files\ArtCraft\PhotoCraft"` and update the path. Older versions of this repo pointed at `C:\Program Files\PhotoCraft`, which the installer doesn't use |
+| `error: unexpected argument '--headless' found` | An old config with a newer CLI. Headless is now the default, so remove `"--headless"` from `args` in `.mcp.json`, `.omp/mcp.json` or your local override, then restart the client |
+| `the argument '--automation-read-root <DIR>' cannot be used with 'PHOTOCRAFT_CONTROL_PORT'`, or `configure automation roots on the desktop app` | `PHOTOCRAFT_CONTROL_PORT` is set in the environment, or `--bridge` was passed, so the CLI is in bridge mode and refuses root flags. Unset the variable for the headless entry, or drop the root flags from a bridge entry and set the roots on the desktop app |
+| `cannot resolve automation read root` (older: `cannot open automation read root`) | The root directory doesn't exist or `.` isn't what you expect. Start omp from the repo root, or create the folder |
 | A path is refused when opening or saving | It is outside the granted roots. Use a path under the root, or widen the root |
 | Tool calls fail but the server is connected | Read the tool error. Failures return `isError`, and a reply-budget error means the step may have completed, so check `doc_inspect` before retrying |
 | `ui_*` tools fail | They need bridge mode and a running desktop app. The headless server rejects them |
